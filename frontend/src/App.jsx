@@ -7,11 +7,14 @@ import { ProtectedRoute } from './components/ProtectedRoute.jsx';
 import LandingPage from './pages/LandingPage.jsx';
 import LoginPage from './pages/LoginPage.jsx';
 import RegisterPage from './pages/RegisterPage.jsx';
+import Home from './pages/Home.jsx';
+import ReadBlog from './pages/ReadBlog.jsx';
+import WriteBlog from './pages/WriteBlog.jsx';
 import { clearSession, getSession, roleHome, validateSession } from './utils/auth.js';
 
 /** Propagate identity through callbacks without adding a second router or Context.
  * Returns:
- *   Public and identity pages plus guarded redirects for future workspace routes.
+ *   Public, identity and post pages plus guarded redirects for future admin routes.
  */
 export default function App() {
   const [session, setCurrentSession] = useState(getSession);
@@ -49,10 +52,10 @@ export default function App() {
         <Route path="/login" element={<LoginPage session={activeSession} onAuthenticated={authenticated} />} />
         <Route path="/register" element={<RegisterPage session={activeSession} onAuthenticated={authenticated} />} />
         <Route element={<ProtectedRoute session={activeSession} />}>
-          <Route path="/blogs" element={<Navigate to="/" replace />} />
-          <Route path="/blog/:id" element={<Navigate to="/" replace />} />
-          <Route path="/write" element={<Navigate to="/" replace />} />
-          <Route path="/edit/:id" element={<Navigate to="/" replace />} />
+          <Route path="/blogs" element={<Home session={activeSession} />} />
+          <Route path="/blog/:id" element={<ReadBlog session={activeSession} />} />
+          <Route path="/write" element={<WriteBlog session={activeSession} />} />
+          <Route path="/edit/:id" element={<WriteBlog session={activeSession} />} />
         </Route>
         <Route element={<ProtectedRoute session={activeSession} adminOnly />}>
           <Route path="/admin" element={<Navigate to="/" replace />} />
