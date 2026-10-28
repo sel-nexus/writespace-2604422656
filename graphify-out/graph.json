@@ -98,6 +98,30 @@
       "_origin": "ast"
     },
     {
+      "id": "frontend_e2e_identity_spec_writeraccount",
+      "label": "writerAccount",
+      "file_type": "code",
+      "source_file": "frontend/e2e/identity.spec.js",
+      "source_location": "L49",
+      "_origin": "ast"
+    },
+    {
+      "id": "frontend_e2e_identity_spec_writersession",
+      "label": "writerSession",
+      "file_type": "code",
+      "source_file": "frontend/e2e/identity.spec.js",
+      "source_location": "L53",
+      "_origin": "ast"
+    },
+    {
+      "id": "frontend_e2e_identity_spec_adminsession",
+      "label": "adminSession",
+      "file_type": "code",
+      "source_file": "frontend/e2e/identity.spec.js",
+      "source_location": "L54",
+      "_origin": "ast"
+    },
+    {
       "id": "frontend_e2e_posts_spec",
       "label": "posts.spec.js",
       "file_type": "code",
@@ -142,6 +166,32 @@
       "_origin": "ast"
     },
     {
+      "id": "frontend_e2e_posts_spec_seedreader",
+      "label": "seedReader()",
+      "file_type": "code",
+      "source_file": "frontend/e2e/posts.spec.js",
+      "source_location": "L39",
+      "_callable": true,
+      "_origin": "ast"
+    },
+    {
+      "id": "frontend_e2e_preflight_spec",
+      "label": "preflight.spec.js",
+      "file_type": "code",
+      "source_file": "frontend/e2e/preflight.spec.js",
+      "source_location": "L1",
+      "_origin": "ast"
+    },
+    {
+      "id": "frontend_e2e_preflight_spec_capture",
+      "label": "capture()",
+      "file_type": "code",
+      "source_file": "frontend/e2e/preflight.spec.js",
+      "source_location": "L6",
+      "_callable": true,
+      "_origin": "ast"
+    },
+    {
       "id": "frontend_e2e_public_spec",
       "label": "public.spec.js",
       "file_type": "code",
@@ -149,6 +199,23 @@
       "source_location": "L1",
       "_origin": "ast",
       "community": 4
+    },
+    {
+      "id": "frontend_e2e_public_spec_seedpublic",
+      "label": "seedPublic()",
+      "file_type": "code",
+      "source_file": "frontend/e2e/public.spec.js",
+      "source_location": "L5",
+      "_callable": true,
+      "_origin": "ast"
+    },
+    {
+      "id": "frontend_e2e_public_spec_unsortedposts",
+      "label": "unsortedPosts",
+      "file_type": "code",
+      "source_file": "frontend/e2e/public.spec.js",
+      "source_location": "L47",
+      "_origin": "ast"
     },
     {
       "id": "frontend_package",
@@ -1144,6 +1211,22 @@
       "_origin": "ast"
     },
     {
+      "id": "frontend_src_test_auth_test_registrationfields",
+      "label": "registrationFields",
+      "file_type": "code",
+      "source_file": "frontend/src/test/auth.test.js",
+      "source_location": "L10",
+      "_origin": "ast"
+    },
+    {
+      "id": "frontend_src_test_auth_test_invalidtypes",
+      "label": "invalidTypes",
+      "file_type": "code",
+      "source_file": "frontend/src/test/auth.test.js",
+      "source_location": "L14",
+      "_origin": "ast"
+    },
+    {
       "id": "frontend_src_test_blogs_test",
       "label": "blogs.test.jsx",
       "file_type": "code",
@@ -1989,6 +2072,36 @@
       "_origin": "ast"
     },
     {
+      "source": "frontend_e2e_identity_spec",
+      "target": "frontend_e2e_identity_spec_writeraccount",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/identity.spec.js",
+      "source_location": "L49",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_identity_spec",
+      "target": "frontend_e2e_identity_spec_writersession",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/identity.spec.js",
+      "source_location": "L53",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_identity_spec",
+      "target": "frontend_e2e_identity_spec_adminsession",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/identity.spec.js",
+      "source_location": "L54",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
       "source": "frontend_e2e_posts_spec",
       "target": "frontend_e2e_fixtures",
       "relation": "imports_from",
@@ -2052,23 +2165,22 @@
     },
     {
       "source": "frontend_e2e_posts_spec",
-      "target": "frontend_e2e_posts_spec_registerwriter",
-      "relation": "calls",
-      "context": "call",
+      "target": "frontend_e2e_posts_spec_seedreader",
+      "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "frontend/e2e/posts.spec.js",
-      "source_location": "L40",
+      "source_location": "L39",
       "weight": 1.0,
       "_origin": "ast"
     },
     {
       "source": "frontend_e2e_posts_spec",
-      "target": "frontend_e2e_posts_spec_navigateworkspace",
+      "target": "frontend_e2e_posts_spec_seedreader",
       "relation": "calls",
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "frontend/e2e/posts.spec.js",
-      "source_location": "L42",
+      "source_location": "L58",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2079,7 +2191,29 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "frontend/e2e/posts.spec.js",
-      "source_location": "L46",
+      "source_location": "L65",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_posts_spec",
+      "target": "frontend_e2e_posts_spec_registerwriter",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/posts.spec.js",
+      "source_location": "L165",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_posts_spec",
+      "target": "frontend_e2e_posts_spec_navigateworkspace",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/posts.spec.js",
+      "source_location": "L167",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2090,7 +2224,50 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "frontend/e2e/posts.spec.js",
-      "source_location": "L95",
+      "source_location": "L220",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_preflight_spec",
+      "target": "frontend_e2e_fixtures",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/preflight.spec.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_preflight_spec",
+      "target": "frontend_e2e_fixtures_test",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/preflight.spec.js",
+      "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_preflight_spec",
+      "target": "frontend_e2e_preflight_spec_capture",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/preflight.spec.js",
+      "source_location": "L6",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_preflight_spec",
+      "target": "frontend_e2e_preflight_spec_capture",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/preflight.spec.js",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -2113,6 +2290,37 @@
       "confidence": "EXTRACTED",
       "source_file": "frontend/e2e/public.spec.js",
       "source_location": "L2",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_public_spec",
+      "target": "frontend_e2e_public_spec_seedpublic",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/public.spec.js",
+      "source_location": "L5",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_public_spec",
+      "target": "frontend_e2e_public_spec_unsortedposts",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/public.spec.js",
+      "source_location": "L47",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_e2e_public_spec",
+      "target": "frontend_e2e_public_spec_seedpublic",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/e2e/public.spec.js",
+      "source_location": "L26",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -5402,13 +5610,33 @@
     },
     {
       "source": "frontend_src_test_auth_test",
+      "target": "frontend_src_test_auth_test_registrationfields",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/test/auth.test.js",
+      "source_location": "L10",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_test_auth_test",
+      "target": "frontend_src_test_auth_test_invalidtypes",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "frontend/src/test/auth.test.js",
+      "source_location": "L14",
+      "weight": 1.0,
+      "_origin": "ast"
+    },
+    {
+      "source": "frontend_src_test_auth_test",
       "target": "frontend_src_utils_auth",
       "relation": "imports_from",
       "context": "import",
       "deferred": true,
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/test/auth.test.js",
-      "source_location": "L31",
+      "source_location": "L36",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -6363,7 +6591,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "frontend/src/test/public.test.jsx",
-      "source_location": "L97",
+      "source_location": "L99",
       "weight": 1.0,
       "_origin": "ast"
     },
@@ -9195,10 +9423,10 @@
     }
   ],
   "metadata": {
-    "built_at": "2026-10-28T05:38:00.724591+00:00",
+    "built_at": "2026-10-28T06:11:30.125291+00:00",
     "version": "graph_update-v1",
     "codebase_root": "/data/artifacts-v2/T0132PcJVCRTV006328102604422656/developer",
     "force": true,
-    "files_scanned": 45
+    "files_scanned": 50
   }
 }
