@@ -10,11 +10,13 @@ import RegisterPage from './pages/RegisterPage.jsx';
 import Home from './pages/Home.jsx';
 import ReadBlog from './pages/ReadBlog.jsx';
 import WriteBlog from './pages/WriteBlog.jsx';
+import AdminDashboard from './pages/AdminDashboard.jsx';
+import UserManagement from './pages/UserManagement.jsx';
 import { clearSession, getSession, roleHome, validateSession } from './utils/auth.js';
 
 /** Propagate identity through callbacks without adding a second router or Context.
  * Returns:
- *   Public, identity and post pages plus guarded redirects for future admin routes.
+ *   Public, identity, post and administrator pages with guarded workspace routes.
  */
 export default function App() {
   const [session, setCurrentSession] = useState(getSession);
@@ -58,8 +60,8 @@ export default function App() {
           <Route path="/edit/:id" element={<WriteBlog session={activeSession} />} />
         </Route>
         <Route element={<ProtectedRoute session={activeSession} adminOnly />}>
-          <Route path="/admin" element={<Navigate to="/" replace />} />
-          <Route path="/users" element={<Navigate to="/" replace />} />
+          <Route path="/admin" element={<AdminDashboard session={activeSession} />} />
+          <Route path="/users" element={<UserManagement session={activeSession} />} />
         </Route>
         <Route
           path="*"
