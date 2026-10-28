@@ -7,6 +7,11 @@ import {
 import { getUsers, saveUsers } from '../utils/storage.js';
 
 const input = { displayName: 'Mira', username: 'mira', password: 'demo-only', confirmPassword: 'demo-only' };
+const registrationFields = [
+  ['displayName', 'Display name'], ['username', 'Username'],
+  ['password', 'Password'], ['confirmPassword', 'Confirm password'],
+];
+const invalidTypes = [['null', null], ['number', 42], ['boolean', true], ['object', {}], ['array', []]];
 
 describe('local demo identity', () => {
   it('always includes the exact permanent administrator and checks its credentials first', () => {
@@ -47,6 +52,47 @@ describe('local demo identity', () => {
     expect(getSession()).toBeNull();
   });
 
+  it.each(registrationFields)('rejects independently omitted registration %s', (key, label) => {
+    const canonical = login('admin', 'admin');
+    const stored = localStorage.getItem(SESSION_KEY);
+    const candidate = { ...input };
+    delete candidate[key];
+    expect(() => register(candidate)).toThrow(expect.objectContaining({
+      fields: { [key]: `${label} is required.` },
+    }));
+    expect(getUsers()).toEqual([]);
+    expect(localStorage.getItem(SESSION_KEY)).toBe(stored);
+    expect(getSession()).toEqual(canonical);
+  });
+
+  it.each(registrationFields.flatMap(([key, label]) => invalidTypes.map(([type, value]) =>
+    [key, label, type, value])))('rejects registration %s (%s) with %s type independently', (key, label, type, value) => {
+    const canonical = login('admin', 'admin');
+    const stored = localStorage.getItem(SESSION_KEY);
+    expect(() => register({ ...input, [key]: value })).toThrow(expect.objectContaining({
+      fields: { [key]: `${label} is required.` },
+    }));
+    expect(getUsers()).toEqual([]);
+    expect(localStorage.getItem(SESSION_KEY)).toBe(stored);
+    expect(getSession()).toEqual(canonical);
+  });
+
+  it('roundtrips large displayName, username and password without truncation or an invented maximum', () => {
+    const displayName = 'Writer '.repeat(2048).trim();
+    const username = 'writer'.repeat(2048);
+    const password = 'demo-only '.repeat(2048);
+    const session = register({ displayName, username, password, confirmPassword: password });
+    const [account] = getUsers();
+    expect(account).toMatchObject({ displayName, username, password, role: 'user' });
+    expect(session).toEqual({ userId: account.id, displayName, username, role: 'user' });
+    expect(JSON.parse(localStorage.getItem(SESSION_KEY))).toEqual(session);
+    expect(getSession()).toEqual(session);
+    clearSession();
+    expect(login(username, password)).toEqual(session);
+    expect(getSession()).toEqual(session);
+    expect(getUsers()).toEqual([account]);
+  });
+
   it('rejects absent registration data and mismatching passwords', () => {
     expect(() => register()).toThrow(/highlighted fields/);
     expect(() => register(null)).toThrow(/highlighted fields/);
@@ -75,6 +121,19 @@ describe('local demo identity', () => {
       expect(getSession()).toBeNull();
     },
   );
+
+  it.each(['username', 'password'].flatMap(key => invalidTypes.map(([type, value]) =>
+    [key, type, value])))('rejects login %s with %s type while the other credential is valid', (key, type, value) => {
+    const canonical = login('admin', 'admin');
+    const stored = localStorage.getItem(SESSION_KEY);
+    const credentials = { username: 'admin', password: 'admin', [key]: value };
+    expect(() => login(credentials.username, credentials.password)).toThrow(expect.objectContaining({
+      fields: { [key]: `${key === 'username' ? 'Username' : 'Password'} is required.` },
+    }));
+    expect(localStorage.getItem(SESSION_KEY)).toBe(stored);
+    expect(getSession()).toEqual(canonical);
+    expect(getUsers()).toEqual([]);
+  });
 
   it('uses the exact invalid-credential message and does not accept malformed account roles', () => {
     const session = register(input);
@@ -164,5 +223,49 @@ describe('local demo identity', () => {
     clearSession();
     clearSession();
     expect(localStorage.getItem(SESSION_KEY)).toBeNull();
+  });
+});
+
+// Complete unsupported-role identities reach the role allowlist, not the missing-field branch.
+describe.each(['validateSession', 'getSession', 'setSession'])('%s session validation branches', method => {
+  it('accepts a complete canonical identity and persists only canonical fields', () => {
+    const canonical = login('admin', 'admin');
+    const candidate = { ...canonical, password: 'never persist this', extra: true };
+    if (method === 'validateSession') expect(validateSession(candidate)).toEqual(canonical);
+    if (method === 'getSession') expect(getSession()).toEqual(canonical);
+    if (method === 'setSession') expect(setSession(candidate)).toEqual(canonical);
+    expect(localStorage.getItem(SESSION_KEY)).toBe(JSON.stringify(canonical));
+  });
+
+  const rejected = [
+    ...[null, [], 'bad', 42, true].map(value => ['invalid shape', value]),
+    ...['userId', 'username', 'displayName', 'role'].map(key => {
+      const value = sessionFor(DEFAULT_ADMIN);
+      delete value[key];
+      return [`missing ${key}`, value];
+    }),
+    ...['ADMIN', 'superuser'].map(role => [`unsupported complete role ${role}`, { ...sessionFor(DEFAULT_ADMIN), role }]),
+    ['absent account', { userId: 'missing', username: 'missing', displayName: 'Missing', role: 'user' }],
+    ['username mismatch', { ...sessionFor(DEFAULT_ADMIN), username: 'imposter' }],
+    ['displayName mismatch', { ...sessionFor(DEFAULT_ADMIN), displayName: 'Imposter' }],
+    ['allowed but mismatching role', { ...sessionFor(DEFAULT_ADMIN), role: 'user' }],
+  ];
+
+  it.each(rejected)('rejects %s without overwriting storage', (reason, candidate) => {
+    const canonical = login('admin', 'admin');
+    const stored = localStorage.getItem(SESSION_KEY);
+    if (method === 'validateSession') expect(validateSession(candidate)).toBeNull();
+    if (method === 'getSession') {
+      const invalidStored = JSON.stringify(candidate);
+      localStorage.setItem(SESSION_KEY, invalidStored);
+      expect(getSession()).toBeNull();
+      expect(localStorage.getItem(SESSION_KEY)).toBe(invalidStored);
+      // Restore the fixture explicitly; getSession must never repair or remove rejected data.
+      localStorage.setItem(SESSION_KEY, stored);
+    }
+    if (method === 'setSession') expect(() => setSession(candidate)).toThrow('This account session is invalid. Please log in again.');
+    expect(localStorage.getItem(SESSION_KEY)).toBe(stored);
+    expect(getSession()).toEqual(canonical);
+    expect(getUsers()).toEqual([]);
   });
 });

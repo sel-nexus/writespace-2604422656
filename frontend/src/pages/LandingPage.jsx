@@ -36,7 +36,7 @@ export default function LandingPage({ session = null }) {
     .filter(isValidPost)
     .sort((first, second) => Date.parse(second.createdAt) - Date.parse(first.createdAt))
     .slice(0, 3);
-  const home = session?.role === 'admin' ? '/admin' : '/blogs';
+  const dashboard = session?.role === 'admin' ? '/admin' : '/blogs';
 
   return (
     <>
@@ -54,12 +54,12 @@ export default function LandingPage({ session = null }) {
               Your thoughts. Your space. Beautifully simple.
             </p>
             <div className="mt-10 flex flex-col items-start gap-3 sm:flex-row">
-              <Link to={session ? home : '/login'} className={ui.primary}>
+              <Link to={session ? '/blogs' : '/login'} className={ui.primary}>
                 Start Reading
                 <ArrowRight size={20} aria-hidden="true" />
               </Link>
               {session ? (
-                <Link to={home} className={ui.secondary}>
+                <Link to={dashboard} className={ui.secondary}>
                   Go to Dashboard
                 </Link>
               ) : (
@@ -68,6 +68,22 @@ export default function LandingPage({ session = null }) {
                 </Link>
               )}
             </div>
+            {/* Built-in pulse is the CSS-only hint; reduced-motion visitors get a static card. */}
+            <article
+              aria-labelledby="writing-hint-title"
+              className={`${ui.card} mt-12 max-w-md motion-safe:animate-pulse motion-safe:[animation-duration:6s] motion-reduce:animate-none`}
+            >
+              <PencilLine size={24} className="mb-4 text-teal-800" aria-hidden="true" />
+              <h2 id="writing-hint-title" className="font-[Georgia] text-2xl text-stone-900">
+                Make room for your next thought
+              </h2>
+              <p className="mt-3 leading-relaxed text-stone-600">
+                Write a plain-text post and keep it in this browser. Start with a title and a thought worth keeping.
+              </p>
+              <Link to={session ? '/write' : '/register'} className={`${ui.secondary} mt-5`}>
+                Open your writing space
+              </Link>
+            </article>
           </div>
         </section>
         <section aria-label="WriteSpace features" className={`${ui.page} grid grid-cols-1 gap-5 md:grid-cols-3`}>

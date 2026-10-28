@@ -80,6 +80,8 @@ describe('public discovery', () => {
     renderPublic();
     expect(screen.getByRole('heading', { level: 1, name: 'WriteSpace' })).toBeInTheDocument();
     expect(screen.getByText('Your thoughts. Your space. Beautifully simple.')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Make room for your next thought' })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Open your writing space' })).toHaveAttribute('href', '/register');
     for (const name of ['Write Freely', 'Private & Local', 'Instant & Fast', 'Latest from the Blog']) {
       expect(screen.getByRole('heading', { name })).toBeInTheDocument();
     }
@@ -170,20 +172,22 @@ describe('public discovery', () => {
   });
 
   it.each([
-    ['admin', '/admin', 'Admin destination'],
-    ['user', '/blogs', 'Writer destination'],
-  ])('returns a signed-in %s to the role home without registration CTAs', async (role, home, destination) => {
+    ['admin', '/admin'],
+    ['user', '/blogs'],
+  ])('sends a signed-in %s to shared reading while preserving the role dashboard', async (role, home) => {
     const user = userEvent.setup();
     renderPublic({ role, displayName: 'Mira' });
     const nav = within(screen.getByRole('navigation', { name: 'Public navigation' }));
     expect(nav.getByText('Mira')).toBeInTheDocument();
     expect(nav.queryByRole('link', { name: 'Login' })).not.toBeInTheDocument();
     expect(screen.queryByRole('link', { name: 'Get Started Free' })).not.toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Open your writing space' })).toHaveAttribute('href', '/write');
     for (const link of screen.getAllByRole('link', { name: 'Go to Dashboard' })) {
       expect(link).toHaveAttribute('href', home);
     }
+    expect(screen.getByRole('link', { name: 'Start Reading' })).toHaveAttribute('href', '/blogs');
     await user.click(screen.getByRole('link', { name: 'Start Reading' }));
-    expect(screen.getByRole('heading', { name: destination })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Writer destination' })).toBeInTheDocument();
   });
 
   it.each([
@@ -194,6 +198,16 @@ describe('public discovery', () => {
     renderPublic({ role, displayName: 'Mira' });
     const nav = within(screen.getByRole('navigation', { name: 'Public navigation' }));
     await user.click(nav.getByRole('link', { name: 'Go to Dashboard' }));
+    expect(screen.getByRole('heading', { name: destination })).toBeInTheDocument();
+  });
+
+  it.each([
+    ['admin', 'Admin destination'],
+    ['user', 'Writer destination'],
+  ])('navigates the hero dashboard action for %s', async (role, destination) => {
+    const user = userEvent.setup();
+    renderPublic({ role, displayName: 'Mira' });
+    await user.click(within(screen.getByRole('main')).getByRole('link', { name: 'Go to Dashboard' }));
     expect(screen.getByRole('heading', { name: destination })).toBeInTheDocument();
   });
 

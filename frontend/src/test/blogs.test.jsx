@@ -130,6 +130,48 @@ it('validates required fields inline, counts content and saves then reads the cr
   expect(getPosts()[0]).toMatchObject({ title: 'New post', content: 'First\nSecond', authorId: owner.userId });
 });
 
+it('creates and edits large title/content values with full reader text, card excerpts and editor prefills', async () => {
+  const title = 'Long title segment '.repeat(300).trim();
+  const content = 'Large plaintext paragraph\n\n<script>not HTML</script>\n'.repeat(2000);
+  const { container } = workspace('/write');
+  fireEvent.change(screen.getByLabelText('Title'), { target: { value: title } });
+  fireEvent.change(screen.getByLabelText('Content'), { target: { value: content } });
+  expect(screen.getByLabelText('Title')).toHaveValue(title);
+  expect(screen.getByLabelText('Content')).toHaveValue(content);
+  expect(screen.getByRole('status')).toHaveTextContent(`${content.length} characters`);
+  await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+  const [post] = getPosts();
+  expect(post).toMatchObject({ title, content, authorId: owner.userId });
+  expect(screen.getByRole('heading', { name: title, exact: true })).toBeVisible();
+  expect(screen.getByRole('heading', { name: title, exact: true }).textContent).toBe(title);
+  expect(container.querySelector('article .whitespace-pre-wrap')).toBeVisible();
+  expect(container.querySelector('article .whitespace-pre-wrap').textContent).toBe(content);
+  expect(container.querySelector('article script')).toBeNull();
+  await userEvent.click(screen.getByRole('link', { name: 'Back to All Posts' }));
+  const card = screen.getByRole('article');
+  expect(within(card).getByRole('heading').textContent).toBe(title);
+  expect(card.querySelector('p').textContent).toBe(content.slice(0, 120));
+  await userEvent.click(screen.getByRole('link', { name: `Edit ${title}`, exact: true }));
+  expect(screen.getByLabelText('Title')).toHaveValue(title);
+  expect(screen.getByLabelText('Content')).toHaveValue(content);
+
+  const nextTitle = 'Revised long title '.repeat(400).trim();
+  const nextContent = 'Revised plaintext\n\nLast line with trailing space \n'.repeat(2500);
+  fireEvent.change(screen.getByLabelText('Title'), { target: { value: nextTitle } });
+  fireEvent.change(screen.getByLabelText('Content'), { target: { value: nextContent } });
+  expect(screen.getByRole('status')).toHaveTextContent(`${nextContent.length} characters`);
+  await userEvent.click(screen.getByRole('button', { name: 'Save' }));
+  expect(getPost(post.id)).toEqual({ ...post, title: nextTitle, content: nextContent });
+  expect(getPosts()).toEqual([{ ...post, title: nextTitle, content: nextContent }]);
+  expect(screen.getByRole('heading', { name: nextTitle, exact: true })).toBeVisible();
+  expect(screen.getByRole('heading', { name: nextTitle, exact: true }).textContent).toBe(nextTitle);
+  expect(container.querySelector('article .whitespace-pre-wrap')).toBeVisible();
+  expect(container.querySelector('article .whitespace-pre-wrap').textContent).toBe(nextContent);
+  await userEvent.click(screen.getByRole('link', { name: 'Edit', exact: true }));
+  expect(screen.getByLabelText('Title')).toHaveValue(nextTitle);
+  expect(screen.getByLabelText('Content')).toHaveValue(nextContent);
+});
+
 it.each(['owner', 'admin'])('prefills and saves updates as %s while retaining original metadata', async role => {
   const post = createPost({ title: 'Old title', content: 'Old\ncontent' });
   workspace(`/edit/${post.id}`, role === 'admin' ? admin : owner);

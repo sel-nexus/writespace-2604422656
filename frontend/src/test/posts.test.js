@@ -18,6 +18,24 @@ beforeEach(() => {
 });
 
 describe('post reading and metadata', () => {
+  it('roundtrips large titles and multiline content through create and update without truncation', () => {
+    const title = 'Long title segment '.repeat(300).trim();
+    const content = 'Large plaintext paragraph\n\n<script>not HTML</script>\n'.repeat(2000);
+    const post = createPost({ title: `  ${title}  `, content });
+    expect(post).toMatchObject({ title, content });
+    expect(getPost(post.id)).toEqual(post);
+    expect(getPosts()).toEqual([post]);
+    expect(JSON.parse(localStorage.getItem('writespace_posts'))).toEqual([post]);
+
+    const nextTitle = 'Revised long title '.repeat(400).trim();
+    const nextContent = 'Revised plaintext\n\nLast line with trailing space \n'.repeat(2500);
+    const updated = updatePost(post.id, { title: `  ${nextTitle}  `, content: nextContent });
+    expect(updated).toEqual({ ...post, title: nextTitle, content: nextContent });
+    expect(getPost(post.id)).toEqual(updated);
+    expect(getPosts()).toEqual([updated]);
+    expect(JSON.parse(localStorage.getItem('writespace_posts'))).toEqual([updated]);
+  });
+
   it('creates UUID/ISO metadata from canonical session, ignores supplied metadata and rereads saved plaintext', () => {
     const post = createPost({ ...input, id: 'forged', authorId: 'forged', authorName: 'forged', createdAt: 'forged' });
     expect(post.id).toMatch(/^[\da-f]{8}-[\da-f]{4}-4[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/i);
